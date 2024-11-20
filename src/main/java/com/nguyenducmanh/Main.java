@@ -15,22 +15,23 @@ public class Main {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        String sql = "SELECT * from Todos";
+        String sql = "SELECT * FROM Todos";
         List<Todo> todos = new ArrayList<>();
         try {
             conn = DBConnection.getConnection();
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Todo todo = new Todo();
-                todo.setId(rs.getInt("Id"));
-                todo.setTitle(rs.getString("Title"));
-                todo.setIsCompleted(rs.getShort("IsCompleted"));
+                Todo todo = Todo.builder()
+                        .Id(rs.getInt("Id"))
+                        .Title(rs.getString("Title"))
+                        .isCompleted(rs.getBoolean("IsCompleted"))
+                        .build();
                 todos.add(todo);
             }
             todos.forEach(todo -> System.out.println(todo.toString()));
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         } finally {
             if (conn != null) {
                 DBConnection.close(conn);
